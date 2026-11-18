@@ -1,0 +1,9 @@
+APK ehitamine (tasuta, ilma programmideta arvutis)
+1. Tee konto: github.com
+2. Uus repo: nupp "+" > New repository > nimi "piibel" > Create.
+3. "uploading an existing file": lohista sinna KÕIK selle kausta failid ja kaustad (www, icons, .github, package.json, capacitor.config.json, .gitignore) > Commit changes.
+   Kui .github kaust ei tulnud kaasa: Add file > Create new file > nimeks kirjuta  .github/workflows/build.yml  ja kleebi sisu failist WORKFLOW-build.yml.txt
+4. Ava repo vahekaart "Actions" > "Build APK" > Run workflow. Oota ~5-8 min.
+5. Ava lõpetatud töö > lehe all "Artifacts" > Piibel-APK > lae alla, paki lahti, saad app-debug.apk.
+6. Saada APK sõpradele (Messenger, e-post, Drive). Androidis lubada "Installi tundmatutest allikatest".
+Andmed salvestuvad rakenduse enda mälus, mitte Chrome'is.
