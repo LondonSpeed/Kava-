@@ -63,13 +63,15 @@ function isDone(a,b){const p=P[S.mode]||{};for(let k=a;k<=b;k++)if(!p[k])return 
 function nts(x,U){const g=o=>x.ch.map(u=>o[CODES[U[u.k].b]+U[u.k].c]).filter(Boolean).map(v=>v.split("|")[LI[S.lang]]).join(" · "),a=S.mode=="theme"?g(TH):"",b=g(X);return(a?`<div class="nt th">${a}</div>`:"")+(b?`<div class="nt">${b}</div>`:"")}
 function render(){const t=T[S.lang],U=units(S.mode),{s,D,e}=calc(),days=[];
 for(let i=0;i<D;i++){const a=Math.floor(i*U.length/D),b=Math.floor((i+1)*U.length/D);if(b<=a)continue;const ch=[];for(let k=a;k<b;k++)ch.push({k,t:lbl(U[k].b,U[k].c,U[k].c)});const d=new Date(s);d.setDate(s.getDate()+i);days.push({i,d,a,b:b-1,ch,done:isDone(a,b-1)})}
+days.forEach((x,k)=>x.n=k+1);
+const ti=Math.floor((new Date(new Date().setHours(0,0,0,0))-s)/864e5);let cur=-1;if(ti>=0&&ti<D)days.forEach(x=>{if(x.i<=ti)cur=x.i});
 days.sort((x,y)=>x.done-y.done||x.i-y.i);
-const ti=Math.floor((new Date(new Date().setHours(0,0,0,0))-s)/864e5),p=P[S.mode]||{},pc=Math.round(Object.keys(p).length*100/U.length);
+const p=P[S.mode]||{},pc=Math.round(Object.keys(p).length*100/U.length);
 $("pb").style.width=pc+"%";$("info").textContent=t.info(fmt(e),D,pc);
 const L=$("list");L.innerHTML="";
-days.forEach(x=>{const el=document.createElement("div");el.className="it"+(x.done?" d":"")+(x.i==ti?" t":"");
+days.forEach(x=>{const el=document.createElement("div");el.className="it"+(x.done?" d":"")+(x.i==cur?" t":"");
 const cnt=x.ch.filter(u=>p[u.k]).length,rows=[...x.ch].sort((m,n)=>(!!p[m.k])-(!!p[n.k])||m.k-n.k);
-el.innerHTML=`<div class="dh"><label class="dl" title="${t.whole}"><input type="checkbox" class="all" data-a="${x.a}" data-b="${x.b}"${x.done?" checked":""}><span>${t.day} ${x.i+1}${x.i==ti?" · "+t.today:""}</span></label><span class="mu">${fmt(x.d)} · ${cnt}/${x.ch.length}</span></div>`+nts(x,U)+rows.map(u=>{const dn=!!p[u.k];return`<div class="s${dn?" x":""}"><span>${u.t}</span><input type="checkbox" data-a="${u.k}" data-b="${u.k}"${dn?" checked":""}></div>`}).join("");
+el.innerHTML=`<div class="dh"><label class="dl" title="${t.whole}"><input type="checkbox" class="all" data-a="${x.a}" data-b="${x.b}"${x.done?" checked":""}><span>${t.day} ${x.n}${x.i==ti?" · "+t.today:""}</span></label><span class="mu">${fmt(x.d)} · ${cnt}/${x.ch.length}</span></div>`+nts(x,U)+rows.map(u=>{const dn=!!p[u.k];return`<div class="s${dn?" x":""}"><span>${u.t}</span><input type="checkbox" data-a="${u.k}" data-b="${u.k}"${dn?" checked":""}></div>`}).join("");
 el.querySelector(".all").indeterminate=cnt>0&&!x.done;L.appendChild(el)})}
 function ui(){const t=T[S.lang];document.documentElement.lang=S.lang;document.documentElement.dataset.theme=S.theme;$("th").textContent=S.theme=="dark"?"☀️":"🌙";
 document.querySelectorAll("[data-i]").forEach(e=>e.textContent=t[e.dataset.i]);
