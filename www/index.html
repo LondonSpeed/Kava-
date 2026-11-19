@@ -16,7 +16,7 @@ select,input[type=number],input[type=date]{width:100%}.rd{display:flex;gap:16px}
 .it.d{background:var(--done);opacity:.8}.it.t{border-color:var(--pr);border-width:2px}.dh{display:flex;justify-content:space-between;font-weight:700;margin-bottom:6px}
 .dl{display:flex;gap:8px;align-items:center;cursor:pointer}.dl input{width:22px;height:22px}.s{margin-left:26px;display:flex;justify-content:space-between;align-items:center;padding:7px 8px;border:1px solid var(--bd);border-radius:6px;margin-top:5px}
 .s.x span:first-child{text-decoration:line-through;color:var(--mu)}.s input{width:22px;height:22px}
-.nt{font-size:.75rem;color:var(--mu);margin:-2px 0 6px 26px}.nt.th{color:var(--pr);font-weight:700;text-transform:uppercase;margin-top:2px}
+.dd{border:0;padding:0;margin:0}.dt{font-size:1.2rem}.dn{margin-left:8px!important;font-weight:400}.dd>summary{display:list-item;margin-left:26px;padding:6px 0;color:var(--mu);font-size:.9rem}.dd[open]>summary{margin-bottom:2px}.nt{font-size:.75rem;color:var(--mu);margin:-2px 0 6px 26px}.nt.th{color:var(--pr);font-weight:700;text-transform:uppercase;margin-top:2px}
 </style></head><body><div class="c">
 <div id="vm">
 <div class="h"><div><h1 data-i="title"></h1><div class="mu" id="ms"></div></div><button id="gs" aria-label="Settings">⚙️</button></div>
@@ -68,6 +68,10 @@ let tot=0;U.forEach(u=>tot+=WT[u.gi]);const T=(tot/D)||1,R=[];let s=0;
 U.forEach((u,k)=>{const w=WT[u.gi],Vn=VS[u.gi];let n=1;if(w>1.5*T)n=Math.min(Vn,Math.max(2,Math.round(w/T)));
 for(let j=0;j<n;j++){const pw=w/n;R.push({k,b:u.b,c:u.c,n,w:pw,vs:n==1?1:Math.round(Vn*j/n)+1,ve:n==1?Vn:Math.round(Vn*(j+1)/n),g:n==1?u.g:u.g+"_"+j+"/"+n,day:Math.min(D-1,Math.floor((s+pw/2)/T))});s+=pw}});
 PC[m]={U,D,P:R};return R}
+const dmy=d=>String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear();
+const OPEN=new Set();
+function rng(ch,U){const r=[];let g=null;const fl=()=>{if(g)r.push(lbl(g.b,g.a,g.z));g=null};
+ch.forEach(x=>{const u=U[x.k];if(u.n==1){if(g&&g.b==u.b&&u.c==g.z+1)g.z=u.c;else{fl();g={b:u.b,a:u.c,z:u.c}}}else{fl();r.push(plbl(u))}});fl();return r.join(", ")}
 function plbl(u){if(u.n==1)return lbl(u.b,u.c,u.c);const n=N[S.lang][u.b];return CH[u.b]==1?`${n} ${u.vs}–${u.ve}`:`${n} ${u.c}:${u.vs}–${u.ve}`}
 function lbl(b,a,z){const n=N[S.lang][b];return CH[b]==1?n:a==z?`${n} ${a}`:`${n} ${a}–${z}`}
 function calc(){const s=pd(S.start);let D=S.dm=="weeks"?Math.max(1,S.weeks*7):Math.max(1,Math.round((pd(S.end)-s)/864e5)+1);const e=new Date(s);e.setDate(s.getDate()+D-1);return{s,D,e}}
@@ -83,8 +87,9 @@ $("pb").style.width=pc+"%";$("info").textContent=t.info(fmt(e),D,pc);
 const L=$("list");L.innerHTML="";
 days.forEach(x=>{const el=document.createElement("div");el.className="it"+(x.done?" d":"")+(x.i==cur?" t":"");
 const cnt=x.ch.filter(u=>p[U[u.k].g]).length,rows=[...x.ch].sort((m,n)=>(!!p[U[m.k].g])-(!!p[U[n.k].g])||m.k-n.k);
-el.innerHTML=`<div class="dh"><label class="dl" title="${t.whole}"><input type="checkbox" class="all" data-a="${x.a}" data-b="${x.b}"${x.done?" checked":""}><span>${t.day} ${x.n}${x.i==ti?" · "+t.today:""}</span></label><span class="mu">${fmt(x.d)} · ${cnt}/${x.ch.length}</span></div>`+nts(x,U)+rows.map(u=>{const dn=!!p[U[u.k].g];return`<div class="s${dn?" x":""}"><span>${u.t}</span><input type="checkbox" data-a="${u.k}" data-b="${u.k}"${dn?" checked":""}></div>`}).join("");
+el.innerHTML=`<div class="dh"><label class="dl" title="${t.whole}"><input type="checkbox" class="all" data-a="${x.a}" data-b="${x.b}"${x.done?" checked":""}><span><span class="dt">${dmy(x.d)}</span><span class="mu dn">${t.day} ${x.n}${x.i==ti?" · "+t.today:""}</span></span></label><span class="mu">${cnt}/${x.ch.length}</span></div>`+nts(x,U)+(()=>{const rw=rows.map(u=>{const dn=!!p[U[u.k].g];return`<div class="s${dn?" x":""}"><span>${u.t}</span><input type="checkbox" data-a="${u.k}" data-b="${u.k}"${dn?" checked":""}></div>`}).join("");return x.ch.length==1?`<div class="rs">${rw}</div>`:`<details class="dd" data-i="${x.i}"${OPEN.has(x.i)?" open":""}><summary>${rng(x.ch,U)}</summary>${rw}</details>`})();
 el.querySelector(".all").indeterminate=cnt>0&&!x.done;L.appendChild(el)})}
+$("list").addEventListener("toggle",e=>{const d=e.target;if(d.dataset&&d.dataset.i!==undefined){if(d.open)OPEN.add(+d.dataset.i);else OPEN.delete(+d.dataset.i)}},true);
 function ui(){const t=T[S.lang];delete cache.cover;document.documentElement.lang=S.lang;document.documentElement.dataset.theme=S.theme;$("th").textContent=S.theme=="dark"?"☀️":"🌙";
 document.querySelectorAll("[data-i]").forEach(e=>e.textContent=t[e.dataset.i]);
 $("mode").innerHTML=MK.map((k,i)=>`<option value="${k}">${i+1}. ${t.modes[i]}</option>`).join("");
